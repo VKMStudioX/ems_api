@@ -51,6 +51,16 @@ class AbsencesController extends Controller
         DB::beginTransaction();
         try {
 
+            if(isset($removedAbsences)) {
+                foreach( $removedAbsences as $rA) {
+                    $remDate = Carbon::parse($rA)->format('Y-m-d H:i:00');
+    
+                 Absence::where('user_id', '=', $userId)
+                 ->where('start', '=', $remDate)
+                 ->delete();
+                }
+            }
+
         if(isset($newAbsences)) {
             foreach( $newAbsences as $nA) {
             $newDate = Carbon::parse($nA)->format('Y-m-d H:i:00');
@@ -59,21 +69,11 @@ class AbsencesController extends Controller
                 'start' => $newDate
             ];
 
-             Absence::where('user_id', '=', $userId)
-             ->where('start', '!=', $newDate)
-             ->insert($newData);
+             Absence::insert($newData);
             }
         }
 
-        if(isset($removedAbsences)) {
-            foreach( $removedAbsences as $rA) {
-                $remDate = Carbon::parse($rA)->format('Y-m-d H:i:00');
-
-             Absence::where('user_id', '=', $userId)
-             ->where('start', '=', $remDate)
-             ->delete();
-            }
-        }
+        
             $response = [
                 'message' => 'user absence(s) updated'
             ];
@@ -122,11 +122,20 @@ class AbsencesController extends Controller
 
         $holidays = $request->holidays;
         $newHolidays = $request->new_holidays;
-        $removeHholidays = $request->removed_holidays;
+        $removedHolidays = $request->removed_holidays;
 
         DB::beginTransaction();
         try {
 
+            if(isset($removedHolidays)) {
+                foreach( $removedHolidays as $rH) {
+                    $remDate = Carbon::parse($rH)->format('Y-m-d H:i:00');
+    
+                 Holiday::where('start', '=', $remDate)
+                 ->delete();
+                }
+            }
+            
         if(isset($newHolidays)) {
             foreach( $newHolidays as $nH) {
             $newDate = Carbon::parse($nH)->format('Y-m-d H:i:00');
@@ -138,14 +147,7 @@ class AbsencesController extends Controller
             }
         }
 
-        if(isset($removedHolidays)) {
-            foreach( $removedHolidays as $rH) {
-                $remDate = Carbon::parse($rH)->format('Y-m-d H:i:00');
-
-             Holiday::where('start', '=', $remDate)
-             ->delete();
-            }
-        }
+       
         
             $response = [
                 'message' => 'holidays updated'
