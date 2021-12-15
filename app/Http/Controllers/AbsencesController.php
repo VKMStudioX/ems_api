@@ -27,6 +27,12 @@ class AbsencesController extends Controller
             ->where('user_id', $request->id)
             ->get();
 
+            // foreach($userAbsences as $absence) {
+            //     if(!is_null($absence['start'])){
+            // $absence['start'] = date('Y-m-d', strtotime($absence['start']));
+            //     }
+            // };
+
          return response([
             'user_id' => $request->id,
             'user_absences' => $userAbsences
@@ -43,40 +49,49 @@ class AbsencesController extends Controller
     public function manageAbsences(Request $request): object
     {
 
+        $absencesFromDb = Absence::get()->toArray();
+        $oldAbsencesTime = array_map(function($o) { return Carbon::parse($o['start'])->format('Y-m-d 23:00:00');}, $absencesFromDb);
+        $oldAbsencesUserId = array_map(function($o) { return $o['user_id'];}, $absencesFromDb);
+
         $userId = $request->user_id;
-        $absences = $request->absences;
-        $newAbsences = $request->new_absences;
-        $removedAbsences = $request->removed_absences;
+        $newAbsencesFromReq = $request->absences;
+        $remAbsencesFromReq = $request->removed_absences;
+        $remAbsences = array_map(function($rA) { return date('Y-m-d 23:00:00', strtotime($rA));}, $remAbsencesFromReq);
+        $newAbsences = array_map(function($nA) { return date('Y-m-d 23:00:00', strtotime($nA));}, $newAbsencesFromReq);
+        
 
         DB::beginTransaction();
         try {
 
-            if(isset($removedAbsences)) {
-                foreach( $removedAbsences as $rA) {
-                    $remDate = Carbon::parse($rA)->format('Y-m-d H:i:00');
-    
-                 Absence::where('user_id', '=', $userId)
-                 ->where('start', '=', $remDate)
-                 ->delete();
+                if(isset($remAbsences)) {
+                    foreach ($remAbsences as $remDate) {
+                        if (in_array($remDate, $oldAbsencesTime) && in_array($userId, $oldAbsencesUserId) && !in_array($remDate, $newAbsences)) {
+                            Absence::where('user_id', '=', $userId)
+                            ->where('start', '=', $remDate)
+                            ->delete();
+                        }
+                    }
                 }
-            }
 
-        if(isset($newAbsences)) {
-            foreach( $newAbsences as $nA) {
-            $newDate = Carbon::parse($nA)->format('Y-m-d H:i:00');
-            $newData = [
-                'user_id' => $userId,
-                'start' => $newDate
-            ];
+                if(isset($newAbsences)) {
+                    foreach ($newAbsences as $newDate) {
+                        $newData = [
+                                'user_id' => $userId,
+                                'start' => $newDate
+                            ];
 
-             Absence::insert($newData);
-            }
-        }
-
+                        if (!in_array($newDate, $oldAbsencesTime) || !in_array($userId, $oldAbsencesUserId) ) {
+                             Absence::insert($newData);
+                        }
+                    }
+                }
         
             $response = [
-                'message' => 'user absence(s) updated'
-            ];
+                        'message' => 'user absences updated',
+                        'oldAbsences' => $absencesFromDb,
+                        'newAbsences' => $newAbsences,
+                        'remAbsences' => $remAbsences
+                    ];
 
             DB::commit();
         
@@ -94,7 +109,7 @@ class AbsencesController extends Controller
     
 
 
- /**
+    /**
      * Get User absences.
      *
      * @param null
@@ -103,7 +118,13 @@ class AbsencesController extends Controller
     public function getHolidays(): object
     {
         $holidays = Holiday::select('start')
-            ->get();
+            ->get()->toArray();
+
+        foreach($holidays as $holiday) {
+            if(!is_null($holiday['start'])){
+        $holiday['start'] = date('Y-m-d', strtotime($holiday['start']));
+            }
+        };
 
          return response([
             'holidays' => $holidays
@@ -111,7 +132,7 @@ class AbsencesController extends Controller
     }
 
 
-         /**
+     /**
      * create/update/remove user absence(s)
      *
      * @param Request $request
@@ -119,38 +140,41 @@ class AbsencesController extends Controller
      */
     public function manageHolidays(Request $request): object
     {
+        $holidaysFromDb = Holiday::get()->toArray();
+        $oldHolidays = array_map(function($o) { return Carbon::parse($o['start'])->format('Y-m-d 23:00:00');}, $holidaysFromDb);
 
-        $holidays = $request->holidays;
-        $newHolidays = $request->new_holidays;
-        $removedHolidays = $request->removed_holidays;
+        $newHolidaysFromReq = $request->holidays;
+        $remHolidaysFromReq = $request->removed_holidays;
+        $remHolidays = array_map(function($rH) { return date('Y-m-d 23:00:00', strtotime($rH));}, $remHolidaysFromReq);
+        $newHolidays = array_map(function($nH) { return date('Y-m-d 23:00:00', strtotime($nH));}, $newHolidaysFromReq);
 
         DB::beginTransaction();
         try {
 
-            if(isset($removedHolidays)) {
-                foreach( $removedHolidays as $rH) {
-                    $remDate = Carbon::parse($rH)->format('Y-m-d H:i:00');
-    
-                 Holiday::where('start', '=', $remDate)
-                 ->delete();
+        if(isset($remHolidays)) {
+            foreach ($remHolidays as $remDate) {
+                if (in_array($remDate, $oldHolidays) && !in_array($remDate, $newHolidays)) {
+                    Holiday::where('start', '=', $remDate)
+                         ->delete();
                 }
-            }
-            
-        if(isset($newHolidays)) {
-            foreach( $newHolidays as $nH) {
-            $newDate = Carbon::parse($nH)->format('Y-m-d H:i:00');
-            $newData = [
-                'start' => $newDate
-            ];
-
-             Holiday::insert($newData);
             }
         }
 
-       
+        if(isset($newHolidays)) {
+            foreach ($newHolidays as $newDate) {
+                if (!in_array($newDate, $oldHolidays)) {
+                    Holiday::insert(['start' => $newDate]);
+                }
+            }
+        }
+
+        
         
             $response = [
-                'message' => 'holidays updated'
+                'message' => 'holidays updated',
+                'oldHolidays' => $oldHolidays,
+                'newHolidays' => $newHolidays,
+                'remHolidays' => $remHolidays
             ];
 
             DB::commit();

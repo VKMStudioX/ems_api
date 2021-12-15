@@ -63,14 +63,15 @@ class EventsController extends Controller
     public function getUserEvents(Request $request): object
     {
         $userAbsences = Absence::select('start')
-            ->where('user_id', $request->id)
+            ->where('user_id', '=', $request->id)
             ->get();
 
         $userAbsencesBG = DB::table('absences')
-                            ->where('user_id', $request->id)
+                            ->where('user_id', '=', $request->id)
                             ->join('events_defaults_for_bg', 'absences.type', '=', 'events_defaults_for_bg.type')
                             ->select('absences.start', 'events_defaults_for_bg.title', 'events_defaults_for_bg.backgroundColor', 'events_defaults_for_bg.display', 'events_defaults_for_bg.className')
                             ->get();
+
         $reminders = ReminderTemplate::select('id', 'days_of_week', 'hour_of_reminder', 'title_of_reminder', 'active_reminder', 'text_of_reminder')
             ->get();
 
