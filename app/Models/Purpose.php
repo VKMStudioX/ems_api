@@ -4,10 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\EventsDefaultsForBg;
-use App\Models\User;
+use App\Models\Type;
 
-class Absence extends Model
+class Purpose extends Model
 {
     use HasFactory;
 
@@ -16,14 +15,14 @@ class Absence extends Model
      *
      * @var string
      */
-    protected $table = 'absences';
+    protected $table = 'purposes';
 
     /**
      * Adding 'created_at' and 'updated_at' fields.
      *
      * @var bool
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -31,8 +30,7 @@ class Absence extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id',
-        'start',
+        'purpose',
     ];
 
     /**
@@ -40,17 +38,10 @@ class Absence extends Model
      *
      * @var array
      */
-    protected $casts = [
-        'start' => 'datetime'
-        
-    ];
+    protected $casts = [];
 
-    public function defaults() {
-        return $this->hasOne(EventsDefaultsForBg::class, 'type', 'type');
-    }
-
-    public function users() {
-        return $this->hasMany(User::class, 'id', 'user_id');
-    }
+    // public function type() {
+    //     return $this->belongsTo(Type::class, 'type_id', 'id');
+    // }
 
 }

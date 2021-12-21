@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\EventsDefaultsForBg;
-use App\Models\User;
+use App\Models\Absence;
+use App\Models\ReminderTemplate;
 
-class Absence extends Model
+
+class EventsDefaultsForBg extends Model
 {
     use HasFactory;
 
@@ -16,14 +17,14 @@ class Absence extends Model
      *
      * @var string
      */
-    protected $table = 'absences';
+    protected $table = 'events_defaults_for_bg';
 
     /**
      * Adding 'created_at' and 'updated_at' fields.
      *
      * @var bool
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -31,8 +32,11 @@ class Absence extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id',
-        'start',
+        'type',
+        'title',
+        'backgroundColor',
+        'display',
+        'className'
     ];
 
     /**
@@ -40,17 +44,14 @@ class Absence extends Model
      *
      * @var array
      */
-    protected $casts = [
-        'start' => 'datetime'
-        
-    ];
+    protected $casts = [];
 
-    public function defaults() {
-        return $this->hasOne(EventsDefaultsForBg::class, 'type', 'type');
+    public function absences() {
+        return $this->belongsTo(Absence::class, 'type', 'type');
     }
 
-    public function users() {
-        return $this->hasMany(User::class, 'id', 'user_id');
+    public function reminders() {
+        return $this->belongsTo(ReminderTemplate::class, 'type', 'type');
     }
 
 }

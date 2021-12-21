@@ -22,29 +22,9 @@ class EventsController extends Controller
      */
     public function getAllUsersEvents(Request $request): object
     {
-
-        $userAbsences = DB::table('users')
-                            ->join('absences', 'users.id', '=', 'absences.user_id')
-                            ->select('users.first_name', 
-                            'users.last_name',
-                             'absences.start', 
-                             'absences.user_id',
-                             'absences.type',
-                             )
-                            ->get();
- 
-        $userAbsencesBG = DB::table('absences')
-                            ->join('events_defaults_for_bg', 'absences.type', '=', 'events_defaults_for_bg.type')
-                            ->select('absences.start',
-                             'events_defaults_for_bg.title', 
-                             'events_defaults_for_bg.backgroundColor',
-                              'events_defaults_for_bg.display',
-                               'events_defaults_for_bg.className')
-                            ->get();
-
-        $reminders = ReminderTemplate::select('id', 'days_of_week', 'hour_of_reminder', 'title_of_reminder', 'active_reminder', 'text_of_reminder')
-            ->get();
-
+        $userAbsences = Absence::with('users')->get();
+        $userAbsencesBG = Absence::with('defaults')->get();
+        $reminders = ReminderTemplate::all();
 
          return response([
             'user_reminders' => $reminders,
@@ -66,14 +46,15 @@ class EventsController extends Controller
             ->where('user_id', '=', $request->id)
             ->get();
 
-        $userAbsencesBG = DB::table('absences')
-                            ->where('user_id', '=', $request->id)
-                            ->join('events_defaults_for_bg', 'absences.type', '=', 'events_defaults_for_bg.type')
-                            ->select('absences.start', 'events_defaults_for_bg.title', 'events_defaults_for_bg.backgroundColor', 'events_defaults_for_bg.display', 'events_defaults_for_bg.className')
-                            ->get();
+        // $userAbsencesBG = DB::table('absences')
+        //                     ->where('user_id', '=', $request->id)
+        //                     ->join('events_defaults_for_bg', 'absences.type', '=', 'events_defaults_for_bg.type')
+        //                     ->select('absences.start', 'events_defaults_for_bg.title', 'events_defaults_for_bg.backgroundColor', 'events_defaults_for_bg.display', 'events_defaults_for_bg.className')
+        //                     ->get();
+                            
+        $userAbsencesBG = Absence::with('defaults')->where('user_id', '=', $request->id)->get();
 
-        $reminders = ReminderTemplate::select('id', 'days_of_week', 'hour_of_reminder', 'title_of_reminder', 'active_reminder', 'text_of_reminder')
-            ->get();
+        $reminders = ReminderTemplate::all();
 
          return response([
             'user_reminders' => $reminders,

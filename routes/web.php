@@ -4,8 +4,12 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redis;
 use App\Helpers\ConnectionChecker;
 use App\Models\User;
-use App\Http\Controllers\KpiController;
 
+use App\Http\Controllers\ProjectsController;
+
+use App\Http\Resources\UserResource;
+
+use App\Http\Resources\UserCollection;
 
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -91,3 +95,19 @@ use Carbon\Carbon;
 //                     }
 //                 }
 // });
+
+
+// Route::get('/user/{id}', function ($id) {
+//     return new UserResource(User::findOrFail($id));
+// });
+
+// Route::get('/users', function () {
+//     return UserResource::collection(User::all());
+// });
+
+
+Route::get('/get_all_prjTech', [ProjectsController::class, 'getAllProjectTechnologies']);
+
+Route::get('/get_all_techTemplates', [ProjectsController::class, 'getAllTechTemplates']);
+
+Route::get('/get_all_projects', [ProjectsController::class, 'getAllProjects']);
