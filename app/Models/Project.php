@@ -30,7 +30,6 @@ class Project extends Model
     * @var array
     */
    protected $fillable = [
-       'project_technology_id',
        'project_name',
        'project_info',
        'project_start',

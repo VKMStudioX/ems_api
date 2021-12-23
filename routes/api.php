@@ -55,7 +55,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         //ADMIN - projects
         Route::get('/get_all_projects', [ProjectsController::class, 'getAllProjects']);
         Route::get('/get_all_techTemplates', [ProjectsController::class, 'getAllTechTemplates']);
-
+        
+        Route::post('/new_project', [ProjectsController::class, 'newProject']);
+        Route::put('/update_project', [ProjectsController::class, 'updateProject']);
+        Route::put('/delete_project', [ProjectsController::class, 'deleteProject']);
+        
     });
     
 });

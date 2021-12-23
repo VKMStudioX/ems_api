@@ -28,7 +28,7 @@ class AuthController extends Controller
         $users = User::select('id', 'email', 'first_name', 'last_name', 'is_admin')->get()->toArray();
     
         return response ([
-            'users' => $users
+            'data' => $users
         ], 200);
     }
 
