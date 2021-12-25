@@ -91,29 +91,29 @@ class AuthController extends Controller
      */
     public function login(Request $request): object
     {
-        $attempts = config('setup.lock_params.attempts');   //number of attempts before lock
-        $time = config('setup.lock_params.time');           //time to wait in minutes
-        $redis = Redis::connection('rconn');
+        // $attempts = config('setup.lock_params.attempts');   //number of attempts before lock
+        // $time = config('setup.lock_params.time');           //time to wait in minutes
+        // $redis = Redis::connection('rconn');
 
         $fields = $request->validate([
             'email' => 'required|string|max:250',
             'password' => 'required|string|max:250'
         ]);
 
-        // check if there aren't too many login attempts with this email
-        if ($redis->exists($fields['email'])) {
-            $user_login_data = json_decode($redis->get($fields['email']));
-            if ($user_login_data[0] >= $attempts and (time() - $user_login_data[1]) <= (60 * $time)) {
-                $time_to_wait = ceil($time - (time() - $user_login_data[1]) / 60);
+        // // check if there aren't too many login attempts with this email
+        // if ($redis->exists($fields['email'])) {
+        //     $user_login_data = json_decode($redis->get($fields['email']));
+        //     if ($user_login_data[0] >= $attempts and (time() - $user_login_data[1]) <= (60 * $time)) {
+        //         $time_to_wait = ceil($time - (time() - $user_login_data[1]) / 60);
 
-                return response([
-                    'message' => ('Too many failed login attempts. Wait ' . $time_to_wait . ' minutes.')
-                ], 403);
+        //         return response([
+        //             'message' => ('Too many failed login attempts. Wait ' . $time_to_wait . ' minutes.')
+        //         ], 403);
 
-            } elseif ((time() - $user_login_data[1]) > (60 * $time)) {
-                $redis->del($fields['email']);
-            }
-        }
+        //     } elseif ((time() - $user_login_data[1]) > (60 * $time)) {
+        //         $redis->del($fields['email']);
+        //     }
+        // }
 
         $user = User::where([
             ['email', $fields['email']],
@@ -121,29 +121,30 @@ class AuthController extends Controller
         ])->first();
 
         if (!$user) {
-            // saving data about failed login attempt
-            if ($redis->exists($fields['email'])) {
-                $user_login_data = json_decode($redis->get($fields['email']));
-                $user_login_data[0]++;
-                $user_login_data[1] = time();
-                $redis->set($fields['email'], json_encode($user_login_data));
-            } else {
-                $user_login_data = array(1, time());
-                $redis->set($fields['email'], json_encode($user_login_data));
-            }
-            if ($user_login_data[0] >= $attempts) {
-                return response([
-                    'message' => ('Incorrect email or password. Try again after ' . $time . ' minutes.')
-                ], 401);
-            } else {
+        //     // saving data about failed login attempt
+        //     if ($redis->exists($fields['email'])) {
+        //         $user_login_data = json_decode($redis->get($fields['email']));
+        //         $user_login_data[0]++;
+        //         $user_login_data[1] = time();
+        //         $redis->set($fields['email'], json_encode($user_login_data));
+        //     } else {
+        //         $user_login_data = array(1, time());
+        //         $redis->set($fields['email'], json_encode($user_login_data));
+        //     }
+        //     if ($user_login_data[0] >= $attempts) {
+        //         return response([
+        //             'message' => ('Incorrect email or password. Try again after ' . $time . ' minutes.')
+        //         ], 401);
+        //     } else {
                 return response([
                     'message' => ('Incorrect email or password.')
                 ], 401);
-            }
-        }
-        //after successful login clear login attempt counter
-        $redis->del($fields['email']);
+            };
+        // }
+        // //after successful login clear login attempt counter
+        // $redis->del($fields['email']);
 
+        
         $token = $user->createToken('emc')->plainTextToken;
 
         $response = [

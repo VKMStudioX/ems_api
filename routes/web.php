@@ -42,20 +42,20 @@ use Carbon\Carbon;
 // });
 
 
-// Route::get('/days-test', function (){
+Route::get('/days-test', function (){
 
-//             $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-//             $daysNum = ['1','2','3','4','5','6','7'];
-//             $daysOfWeek = str_replace($days,$daysNum,"Monday,Sunday");
-//             $time = explode(":", "12:30");
+            $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+            $daysNum = ['1','2','3','4','5','6','7'];
+            $daysOfWeek = str_replace($days,$daysNum,"Monday,Sunday");
+            $time = explode(":", "12:30");
 
-//     return response([
-//         'daysOfWeek' => $daysOfWeek,
-//         'time'=> $time,
-//         'cron' => $time[1] ." ". $time[0] ." * * ". $daysOfWeek
-//     ], 200);
+    return response([
+        'daysOfWeek' => $daysOfWeek,
+        'time'=> $time,
+        'cron' => $time[1] ." ". $time[0] ." * * ". $daysOfWeek
+    ], 200);
 
-// });
+});
 
 
 

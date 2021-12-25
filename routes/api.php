@@ -60,6 +60,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::put('/update_project', [ProjectsController::class, 'updateProject']);
         Route::put('/delete_project', [ProjectsController::class, 'deleteProject']);
         
+        //USER in ADMIN routes - exception
+        Route::put('/participate_in_project', [ProjectsController::class, 'participateInProject']);
+        
     });
     
 });

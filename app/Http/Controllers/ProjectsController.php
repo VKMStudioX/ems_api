@@ -176,7 +176,6 @@ class ProjectsController extends Controller
         }
 
             $response = [
-                // 'reminder' => $reminder,
                 'message' => 'New EMS project sucessfully added',
             ];
 
@@ -198,7 +197,6 @@ class ProjectsController extends Controller
 
         return $compare;
     }
-
 
 
       /**
@@ -310,14 +308,43 @@ class ProjectsController extends Controller
     }
 
 
+       /**
+     * Only for EMS users.
+     * Participate or exit user for (from) project.
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function participateInProject(Request $request)
+    {
 
+        try {
 
+            $projectId = $request->input('project_id');
+            $userId = $request->input('user_id');
 
+            $projectUser = ProjectUser::where('project_id', '=', $projectId)->where('user_id', '=', $userId)->first();
 
+            if(!empty($projectUser)) {
+                $projectUser->delete();
+            } else {
+                $projectUser = new ProjectUser;
+                $projectUser->project_id = $projectId;
+                $projectUser->user_id = $userId;
+                $projectUser->save();
+            }
 
+            return response([
+                'message' => 'Project data updated'
+            ], 200);
 
-
-
+        } catch (Exception $e) {
+            return response([
+                'message' => 'Can not update project',
+                'error' => $e
+            ], 401);
+        }
+    }
 
     /**
      * Get all projects techs
@@ -350,13 +377,9 @@ class ProjectsController extends Controller
     public function getAllProjectTechnologies(Request $request): object
     {
         $prjTech = ProjectTechnology::with('type')->with('methodology')->with('project')->with('technology')->get();
-        // $userAbsencesBG = Absence::with('defaults')->get();
-        // $reminders = ReminderTemplate::all();
 
          return response([
             'prjTech' => $prjTech,
-            // 'user_absences' => $userAbsences,
-            // 'user_absences_BG' => $userAbsencesBG
         ], 200);
 
     }
