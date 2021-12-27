@@ -190,7 +190,7 @@ class ProjectsController extends Controller
         } catch (Exception $e) {
            return response([
                 'message' => 'Can not create project',
-                'error' => $e], 401);
+                'error' => $e], 406);
         }
 
     }
@@ -231,7 +231,7 @@ class ProjectsController extends Controller
         try {
             
             $projectData = $this->projectInfoData($request, $projectId);
-            Project::updateOrCreate($projectData);
+            Project::where('id', '=', $projectId)->update($projectData);
 
             $projectsUsersDb = ProjectUser::with('user')->where('project_id', '=', $projectId)->get()->toArray();
             $projectsUsers = array_map(function($o) { return $o['user'];}, $projectsUsersDb);
@@ -239,11 +239,11 @@ class ProjectsController extends Controller
             $prjUsersToDelete = $this->getDiffOfArrays($projectsUsers, $request->project_users);
 
             foreach($prjUsersToDelete as $delete) {
-                ProjectUser::where('user_id', '=', $delete['id'])->delete();
+                ProjectUser::where('id', '=', $delete['id'])->delete();
             }
             foreach($prjUsersToAdd as $add) {
                 $projectUserData = $this->projectUserData($projectId, $add);
-                ProjectUser::updateOrCreate($projectUserData);
+                ProjectUser::where('project_id', '=', $projectId)->updateOrCreate($projectUserData);
             }
 
             $projectsTechs = ProjectTechnology::where('project_id', '=', $projectId)->get()->toArray();
@@ -255,18 +255,18 @@ class ProjectsController extends Controller
             }
             foreach ($prjTechsToAdd as $add) {
                 $projectTechData = $this->projectTechData($projectId, $add);
-                ProjectTechnology::updateOrCreate($projectTechData);
+                ProjectTechnology::where('project_id', '=', $projectId)->updateOrCreate($projectTechData);
             }
 
             return response([
-                'message' => 'Project data updated'
+                'message' => 'Project data updated',
             ], 200);
 
         } catch (Exception $e) {
             return response([
                 'message' => 'Can not update project',
-                'error' => $e
-            ], 401);
+                'error' => $e,
+            ], 406);
         }
     }
 
@@ -317,7 +317,7 @@ class ProjectsController extends Controller
             return response([
                 'message' => 'Can not delete project',
                 'error' => $e
-            ], 403);
+            ], 406);
         }
     }
 
