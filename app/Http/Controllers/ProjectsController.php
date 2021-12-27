@@ -52,11 +52,17 @@ class ProjectsController extends Controller
      * @param Request $request
      * @return object|null
      */
-    private function validatedProjectData(Request $request)
+    private function validatedProjectData(Request $request, Int $id = null)
     {
+        $validateProjectName = 'required|string|min:3|max:45|unique:App\Models\Project,project_name';
+        
+        if(!empty($id)) {
+            $validateProjectName = 'required|string|min:3|max:45';
+        } 
+
         try {
             $request->validate([
-                'project_info.project_name' => 'required|string|min:3|max:45|unique:App\Models\Project,project_name',
+                'project_info.project_name' => $validateProjectName,
                 'project_info.client_name' => 'required|string|min:3|max:45',
                 'project_info.project_info' => 'required|string|min:3|max:255',
                 'project_info.project_start' => 'required',
@@ -76,7 +82,7 @@ class ProjectsController extends Controller
      * @param Request $request
      * @return object|null
      */
-    private function projectInfoData(Request $request)
+    private function projectInfoData(Request $request, Int $id = null)
     {
         $projectData = [
             'project_name' => $request->project_info['project_name'],
@@ -86,7 +92,7 @@ class ProjectsController extends Controller
             'client_name' => $request->project_info['client_name'],
         ];
 
-        if(property_exists($request, 'id') && !empty($request->id)) {
+        if(!empty($id)) {
             $projectData['id'] = $request->id;
         }
 
@@ -212,11 +218,19 @@ class ProjectsController extends Controller
             return response(['message' => 'permit deny'], 403);
         }
 
+        
+        $projectId = $request->id;
+
+        $validation = $this->validatedProjectData($request, $projectId);
+
+        if($validation) return response([
+                'message' => $validation
+            ], 406);
+
+
         try {
-
-            $projectId = $request->id;
-
-            $projectData = $this->projectInfoData($request);
+            
+            $projectData = $this->projectInfoData($request, $projectId);
             Project::updateOrCreate($projectData);
 
             $projectsUsersDb = ProjectUser::with('user')->where('project_id', '=', $projectId)->get()->toArray();
