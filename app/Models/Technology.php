@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Technology extends Model
 {
@@ -53,4 +54,17 @@ class Technology extends Model
    public function methodology() {
     return $this->hasOne(Methodology::class, 'id', 'methodology_id');
 }
+
+    public function scopeWithDataKey($query) {
+        return $query->selectRaw("*, CONCAT('p', purpose_id, '_t', type_id, '_m', methodology_id, '_', technology) as data_key");
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('withDataKey', function (Builder $builder) {
+            $builder->selectRaw("*, CONCAT('p', purpose_id, '_t', type_id, '_m', methodology_id, '_', technology) as data_key");
+        });
+    }
+
+
 }

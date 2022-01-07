@@ -41,21 +41,25 @@ use Carbon\Carbon;
 
 // });
 
+// Route::get('/', function (){
+//     return view('welcome');
+// });
 
-Route::get('/days-test', function (){
 
-            $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-            $daysNum = ['1','2','3','4','5','6','7'];
-            $daysOfWeek = str_replace($days,$daysNum,"Monday,Sunday");
-            $time = explode(":", "12:30");
+// Route::get('/days-test', function (){
 
-    return response([
-        'daysOfWeek' => $daysOfWeek,
-        'time'=> $time,
-        'cron' => $time[1] ." ". $time[0] ." * * ". $daysOfWeek
-    ], 200);
+//             $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+//             $daysNum = ['1','2','3','4','5','6','7'];
+//             $daysOfWeek = str_replace($days,$daysNum,"Monday,Sunday");
+//             $time = explode(":", "12:30");
 
-});
+//     return response([
+//         'daysOfWeek' => $daysOfWeek,
+//         'time'=> $time,
+//         'cron' => $time[1] ." ". $time[0] ." * * ". $daysOfWeek
+//     ], 200);
+
+// });
 
 
 
@@ -105,9 +109,3 @@ Route::get('/days-test', function (){
 //     return UserResource::collection(User::all());
 // });
 
-
-Route::get('/get_all_prjTech', [ProjectsController::class, 'getAllProjectTechnologies']);
-
-Route::get('/get_all_techTemplates', [ProjectsController::class, 'getAllTechTemplates']);
-
-Route::get('/get_all_projects', [ProjectsController::class, 'getAllProjects']);

@@ -174,7 +174,12 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        // App\Providers\TelescopeServiceProvider::class,
 
+        // APPLICATION PROVIDERS.
+        App\Providers\ProjectServiceProvider::class,
+        App\Providers\PurposeServiceProvider::class,
+        App\Providers\UserServiceProvider::class,
     ],
 
     /*

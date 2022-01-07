@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
+use App\Models\Technology;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ProjectTechnology;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Project extends Model
 {
@@ -42,21 +43,33 @@ class Project extends Model
     *
     * @var array
     */
-   protected $casts = [];
+   protected $casts = [
+    'project_start' => 'date',
+    'project_end' => 'date',
+   ];
 
-//    public function project() {
-//        return $this->hasMany(Project::class, 'id', 'project_id');
-//    }
+    public function technologies()
+    {
+        return $this->belongsToMany(Technology::class);
+    }
 
-//    public function type() {
-//     return $this->hasMany(Type::class, 'id', 'type_id');
-//     }
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
 
-//     public function methodology() {
-//         return $this->hasMany(Methodology::class, 'id', 'methodology_id');
-//     }
+    public function scopeWithRelations($query)
+    {
+        return $query->with(['technologies', 'users']);
+    }
 
-   public function project_technology() {
-    return $this->hasMany(ProjectTechnology::class, 'project_id', 'id');
+    public function scopeGetOne($query, int $id)
+    {
+        return $query->where('id', $id)->first();
+    }
+
+    public function scopeGetOneByUser($query, int $projectId, int $userId)
+    {
+       return $query->with(['users'])->where('id', '=', $projectId)->first();
     }
 }

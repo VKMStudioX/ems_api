@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Technology;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Methodology extends Model
 {
@@ -40,11 +41,16 @@ class Methodology extends Model
     */
    protected $casts = [];
 
-   public function type() {
-       return $this->hasOne(Purpose::class, 'purpose_id', 'id');
-   }
+//    public function type() {
+//        return $this->hasOne(Purpose::class, 'purpose_id', 'id');
+//    }
 
-   public function methodology() {
-    return $this->belongsTo(Methodology::class, 'methodology_id', 'id');
-}
+//    public function methodology() {
+//     return $this->belongsTo(Methodology::class, 'methodology_id', 'id');
+// }
+
+    public function technologies() {
+           return $this->hasMany(Technology::class);
+       }
+
 }

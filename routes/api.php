@@ -1,12 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AbsencesController;
-use App\Http\Controllers\EventsController;
-use App\Http\Controllers\ProjectsController;
-use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Route;
+use App\Http\Resources\ProjectResource;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventsController;
+use App\Http\Controllers\AbsencesController;
+use App\Http\Controllers\ProjectsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,6 +22,7 @@ use App\Models\User;
 // public routes
 Route::post('/login', [AuthController::class, 'login']);
 
+
 // Sanctum protected routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
     // USER / ADMIN
@@ -31,13 +33,17 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/user_absences', [AbsencesController::class, 'getUserAbsences']);
     Route::post('/manage_user_absences', [AbsencesController::class, 'manageAbsences']);
     
-    Route::group(['prefix'=>'/admin','as'=>'/admin'], function(){
+    Route::group([
+        'prefix' => '/admin',
+        'middleware' => 'can:admin-level' 
+    ], function(){
+
         //ADMIN - users
         Route::get('/get_all_users_events', [EventsController::class, 'getAllUsersEvents']);
-        // Route::get('/get_all_users', function () {
-        //     return UserResource::collection(User::all());
-        // });
-        Route::get('/get_all_users', [AuthController::class, 'getAllUsers']);
+        Route::get('/get_all_users', function () {
+            return UserResource::collection(User::all());
+        });
+        // Route::get('/get_all_users', [AuthController::class, 'getAllUsers']);
         Route::post('/register_user', [AuthController::class, 'register']);
         Route::put('/update_user', [AuthController::class, 'updateUser']);
         Route::put('/delete_user', [AuthController::class, 'deleteUser']);
@@ -53,17 +59,21 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('/manage_holidays', [AbsencesController::class, 'manageHolidays']);
 
         //ADMIN - projects
-        Route::get('/get_all_projects', [ProjectsController::class, 'getAllProjects']);
-        Route::get('/get_all_techTemplates', [ProjectsController::class, 'getAllTechTemplates']);
+        // Route::get('/get_all_projects', [ProjectsController::class, 'getAllProjects']);
+        // Route::get('/get_all_projects', function () {
+        //     return ProjectResource::class;
+        // });
         
-        Route::post('/new_project', [ProjectsController::class, 'newProject']);
-        Route::put('/update_project', [ProjectsController::class, 'updateProject']);
-        Route::put('/delete_project', [ProjectsController::class, 'deleteProject']);
-        
-        //USER in ADMIN routes - exception
-        Route::put('/participate_in_project', [ProjectsController::class, 'participateInProject']);
-        
+        Route::post('/new_project', [ProjectsController::class, 'store']);
+        Route::put('/update_project', [ProjectsController::class, 'update']);
+        Route::put('/delete_project', [ProjectsController::class, 'delete']);
+            
     });
     
+    
+    //USER in project routes 
+    Route::get('/admin/get_all_projects', [ProjectsController::class, 'all']);
+    Route::put('/admin/participate_in_project', [ProjectsController::class, 'participate']);
+    Route::put('/admin/exit_from_project', [ProjectsController::class, 'exit']);
 });
 

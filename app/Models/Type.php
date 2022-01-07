@@ -45,8 +45,8 @@ class Type extends Model
 //        return $this->hasOne(Purpose::class, 'purpose_id', 'id');
 //    }
 
-   public function methodology() {
-    return $this->belongsTo(Methodology::class, 'methodology_id', 'id');
+   public function methodologies() {
+    return $this->hasMany(Methodology::class);
     }
 
 }

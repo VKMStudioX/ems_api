@@ -40,8 +40,13 @@ class Purpose extends Model
      */
     protected $casts = [];
 
-    // public function type() {
-    //     return $this->belongsTo(Type::class, 'type_id', 'id');
-    // }
+    public function types() {
+        return $this->hasMany(Type::class);
+    }
+
+    public function scopeWithRelations($query)
+    {
+        return $query->with('types.methodologies.technologies');
+    }
 
 }
