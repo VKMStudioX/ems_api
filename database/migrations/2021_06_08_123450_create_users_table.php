@@ -15,8 +15,10 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('email', 255)->unique();
-            $table->string('password', 255);
+            $table->char('email', 255)->unique();
+            $table->char('password', 255);
+            $table->char('first_name', 50);
+            $table->char('last_name',50);
             $table->boolean('is_admin')->default(0);
             $table->timestamp('updated_at');#->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->timestamp('created_at');#->default(DB::raw('CURRENT_TIMESTAMP'));

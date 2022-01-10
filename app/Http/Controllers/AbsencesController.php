@@ -109,13 +109,7 @@ class AbsencesController extends Controller
     
 
 
-    /**
-     * Get User absences.
-     *
-     * @param null
-     * @return array
-     */
-    public function getHolidays(): object
+    public function getHolidays()
     {
         $holidays = Holiday::select('start')
             ->get()->toArray();
@@ -132,24 +126,13 @@ class AbsencesController extends Controller
     }
 
 
-     /**
-     * create/update/remove user absence(s)
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function manageHolidays(Request $request): object
+    public function manageHolidays(Request $request)
     {
-        $holidaysFromDb = Holiday::get()->toArray();
-        $oldHolidays = array_map(function($o) { return Carbon::parse($o['start'])->format('Y-m-d 23:00:00');}, $holidaysFromDb);
+        $holidaysFromDb = Holiday::select('start')->get()->toArray();
+        $oldHolidays = array_map(function($o) { return Carbon::parse($o['start'])->format('Y-m-d');}, $holidaysFromDb);
 
-        $newHolidaysFromReq = $request->holidays;
-        $remHolidaysFromReq = $request->removed_holidays;
-        $remHolidays = array_map(function($rH) { return date('Y-m-d 23:00:00', strtotime($rH));}, $remHolidaysFromReq);
-        $newHolidays = array_map(function($nH) { return date('Y-m-d 23:00:00', strtotime($nH));}, $newHolidaysFromReq);
-
-        DB::beginTransaction();
-        try {
+        $newHolidays = $request->holidays;
+        $remHolidays = $request->removed_holidays;
 
         if(isset($remHolidays)) {
             foreach ($remHolidays as $remDate) {
@@ -167,29 +150,13 @@ class AbsencesController extends Controller
                 }
             }
         }
-
         
-        
-            $response = [
+            return response([
                 'message' => 'holidays updated',
                 'oldHolidays' => $oldHolidays,
                 'newHolidays' => $newHolidays,
                 'remHolidays' => $remHolidays
-            ];
-
-            DB::commit();
-        
-            return response($response, 200);
-
-        } catch (Exception $e) {
-            DB::rollback();
-
-            return response([
-                'error' => $e,
-                'message' => 'Error occurred, operation terminated.'
-            ], 406);
-        }
+            ], 200);
     }
 
-
-    }
+}

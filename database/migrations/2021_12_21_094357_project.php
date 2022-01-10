@@ -15,13 +15,11 @@ class Project extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            // $table->string("project_technology_ids",50)->nullable();
-            $table->string("project_name",255)->nullable();
-            $table->longText("project_info")->nullable();
-            $table->datetime('project_start');
-            $table->datetime('project_end');
-            $table->datetime('project_start');
-            $table->string("client_name",255)->nullable();
+            $table->char("project_name",255)->nullable();
+            $table->char("project_info",255)->nullable();
+            $table->date('project_start');
+            $table->date('project_end');
+            $table->char("client_name",255)->nullable();
         });
     }
 

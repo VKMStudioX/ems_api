@@ -51,10 +51,10 @@ class ProjectsController extends Controller
     public function delete(Request $request)
     {
         $this->projectRepository->delete($request->id);
-        return response(['message' => 'Project sucessfully deleted',], 201);
+        return response(['message' => 'Project sucessfully deleted'], 201);
     }
 
-    public function participe(Request $request)
+    public function participate(Request $request)
     {
         $projectId = $request->input('project_id');
         $userId = $request->input('user_id');

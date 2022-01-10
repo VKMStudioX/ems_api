@@ -38,7 +38,7 @@ class Holiday extends Model
      * @var array
      */
     protected $casts = [
-        'start' => 'datetime'
+        'start' => 'date'
     ];
 
 }

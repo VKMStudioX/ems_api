@@ -14,12 +14,12 @@ class EventsDefaultsForBg extends Migration
     public function up()
     {
         Schema::create('events_defaults_for_bg', function (Blueprint $table) {
-            $table->id()->primary()->autoIncrement();
-            $table->string("type",255)->default("");
-            $table->string("title",255)->default("");
-            $table->string("backgroundColor",255)->default("");
-            $table->string("display",255)->default("");
-            $table->string("className",255)->default("");
+            $table->id();
+            $table->char("type",255)->nullable();
+            $table->char("title",255)->nullable();
+            $table->char("backgroundColor",255)->nullable();
+            $table->char("display",255)->nullable();
+            $table->char("className",255)->nullable();
         });
     }
 

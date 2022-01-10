@@ -15,16 +15,12 @@ class Absences extends Migration
     {
         Schema::create('absences', function (Blueprint $table) {
 
-            $table->id()->primary()->autoIncrement();
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade')
-                ->unsigned();
+            $table->id();
+            $table->unsignedBigInteger("user_id");
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string("type",255)->default("Absence");
-            $table->datetime('start');
+            $table->char('start');
             $table->timestamps();
-
         });
     }
 

@@ -15,9 +15,12 @@ class Technology extends Migration
     {
         Schema::create('technologies', function (Blueprint $table) {
             $table->id();
-            $table->integer("purpose_id")->nullable();
-            $table->integer("type_id")->nullable();
-            $table->integer("methodology_id")->nullable();
+            $table->unsignedBigInteger("purpose_id");
+            $table->foreign('purpose_id')->references('id')->on('purposes')->onDelete('cascade');
+            $table->unsignedBigInteger("type_id");
+            $table->foreign('type_id')->references('id')->on('types')->onDelete('cascade');
+            $table->unsignedBigInteger("methodology_id");
+            $table->foreign('methodology_id')->references('id')->on('methodologies')->onDelete('cascade');
             $table->string("technology",50)->nullable();
             $table->string("language",50)->nullable();
         });

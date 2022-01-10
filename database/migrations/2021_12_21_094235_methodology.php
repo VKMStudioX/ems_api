@@ -16,8 +16,9 @@ class Methodology extends Migration
     {
         Schema::create('methodologies', function (Blueprint $table) {
             $table->id();
-            $table->integer("type_id")->nullable();
-            $table->string("name",50)->nullable();
+            $table->unsignedBigInteger("type_id");
+            $table->foreign('type_id')->references('id')->on('types')->onDelete('cascade');
+            $table->char("name",50)->nullable();
         });
     }
 

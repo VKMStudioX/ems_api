@@ -14,12 +14,12 @@ class RemindersTemplates extends Migration
     public function up()
     {
         Schema::create('reminders_templates', function (Blueprint $table) {
-            $table->id()->primary()->autoIncrement();
-            $table->string("days_of_week",255)->default("");
-            $table->string("hour_of_reminder",255)->default("");
-            $table->string("title_of_reminder",255)->default("");
-            $table->string("active_of_reminder",255)->default("");
-            $table->string("text_of_reminder",255)->default("");
+            $table->id();
+            $table->char("days_of_week",255)->nullable();
+            $table->char("hour_of_reminder",255)->nullable();
+            $table->char("title_of_reminder",255)->nullable();
+            $table->integer("active_reminder")->nullable();
+            $table->char("text_of_reminder",255)->nullable();
             $table->timestamps();
         });
     }

@@ -15,7 +15,7 @@ class Purpose extends Migration
     {
         Schema::create('purposes', function (Blueprint $table) {
             $table->id();
-            $table->string("name",50)->nullable();
+            $table->char("name",50)->nullable();
         });
     }
 
